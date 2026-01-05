@@ -1,24 +1,25 @@
 # Living Content Platform Architecture
 
-A comprehensive architectural reference for the Living Content multi-tenant AI infrastructure platform.
+A comprehensive architectural reference for the Living Content multi-tenant AI
+infrastructure platform.
 
 ## Quick Navigation
 
-| Document | Description |
-|----------|-------------|
-| [Platform Overview](platform-overview.md) | High-level architecture and component relationships |
+| Document                                        | Description                                             |
+| ----------------------------------------------- | ------------------------------------------------------- |
+| [Platform Overview](platform-overview.md)       | High-level architecture and component relationships     |
 | [Infrastructure Layer](infrastructure-layer.md) | `living-content-admin` - Platform management components |
-| [Application Layer](application-layer.md) | `living-content-gaim` - Runtime services and tools |
-| [Multi-Tenancy](multi-tenancy.md) | Tenancy model, namespaces, and isolation |
-| [Data Stores](data-stores.md) | Firestore, MongoDB, and LanceDB schemas |
-| [Networking](networking.md) | DNS patterns, load balancing, and traffic flow |
-| [Authentication](authentication.md) | Auth layers, flows, and session management |
-| [Observability](observability.md) | Metrics, resilience patterns, and monitoring |
-| [Architecture Assessment](architecture-assessment.md) | Best practices, robustness, and scalability evaluation |
+| [Application Layer](application-layer.md)       | `living-content-gaim` - Runtime services and tools      |
+| [Multi-Tenancy](multi-tenancy.md)               | Tenancy model, namespaces, and isolation                |
+| [Data Stores](data-stores.md)                   | Firestore, MongoDB, and LanceDB schemas                 |
+| [Networking](networking.md)                     | DNS patterns, load balancing, and traffic flow          |
+| [Authentication](authentication.md)             | Auth layers, flows, and session management              |
+| [Observability](observability.md)               | Metrics, resilience patterns, and monitoring            |
 
 ## Platform Summary
 
-Living Content is a **GitOps-driven multi-tenant AI infrastructure platform** built on Google Cloud Platform, consisting of two primary codebases:
+Living Content is a **GitOps-driven multi-tenant AI infrastructure platform**
+built on Google Cloud Platform, consisting of two primary codebases:
 
 ```mermaid
 graph TB
@@ -51,16 +52,16 @@ graph TB
 
 ## Repositories
 
-| Repository | Purpose |
-|------------|---------|
-| `living-content-admin` | Platform CLI, Tenant Manager, platform services |
-| `living-content-gaim` | GAIM runtime: API, Worker, Frontend, Core tools |
-| `living-content-gitops-templates` | Jinja2 Kubernetes resource templates |
-| `living-content-gitops` | Generated Kubernetes manifests (ArgoCD source) |
+| Repository                        | Purpose                                         |
+| --------------------------------- | ----------------------------------------------- |
+| `living-content-admin`            | Platform CLI, Tenant Manager, platform services |
+| `living-content-gaim`             | GAIM runtime: API, Worker, Frontend, Core tools |
+| `living-content-gitops-templates` | Jinja2 Kubernetes resource templates            |
+| `living-content-gitops`           | Generated Kubernetes manifests (ArgoCD source)  |
 
 ## CLI Tools
 
-| CLI | Purpose | Key Commands |
-|-----|---------|--------------|
-| `lco-admin` | Platform management | `tenant create`, `gaim create`, `gcp cluster create` |
-| `lco-gaim` | GAIM operations | `config get/set`, `env local/remote`, `docker up/down` |
+| CLI         | Purpose             | Key Commands                                           |
+| ----------- | ------------------- | ------------------------------------------------------ |
+| `lco-admin` | Platform management | `tenant create`, `gaim create`, `gcp cluster create`   |
+| `lco-gaim`  | GAIM operations     | `config get/set`, `env local/remote`, `docker up/down` |
