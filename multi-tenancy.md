@@ -1,6 +1,7 @@
 # Multi-Tenancy Model
 
-Living Content implements a multi-tenant architecture with namespace-based isolation, RBAC enforcement, and GitOps-driven provisioning.
+Living Content implements a multi-tenant architecture with namespace-based
+isolation, RBAC enforcement, and GitOps-driven provisioning.
 
 ## Tenancy Hierarchy
 
@@ -14,7 +15,7 @@ graph TB
                 APPSETS["ApplicationSets"]
             end
 
-            subgraph tenant_ns["Namespace: tenant-acme"]
+            subgraph tenant_ns["Namespace: tenant-siriuscorp"]
                 T_RES["Tenant Resources"]
                 T_QUOTA["Resource Quotas"]
             end
@@ -27,7 +28,7 @@ graph TB
                 G1_MONGO["MongoDB"]
             end
 
-            subgraph gaim_ns2["Namespace: gaim-hal"]
+            subgraph gaim_ns2["Namespace: gaim-deepthought"]
                 G2_API["API"]
                 G2_WORKER["Worker"]
                 G2_HUB["Hub"]
@@ -44,13 +45,13 @@ graph TB
 
 ## Key Concepts
 
-| Concept | Description |
-|---------|-------------|
-| **Tenant** | Top-level organizational unit that owns and manages GAIMs |
-| **GAIM** | Deployable AI application instance (Generative AI Manager) |
-| **AppProject** | ArgoCD resource defining deployment access boundaries |
-| **Application** | ArgoCD resource that deploys actual workloads |
-| **Namespace** | Kubernetes isolation unit |
+| Concept         | Description                                                |
+| --------------- | ---------------------------------------------------------- |
+| **Tenant**      | Top-level organizational unit that owns and manages GAIMs  |
+| **GAIM**        | Deployable AI application instance (Generative AI Manager) |
+| **AppProject**  | ArgoCD resource defining deployment access boundaries      |
+| **Application** | ArgoCD resource that deploys actual workloads              |
+| **Namespace**   | Kubernetes isolation unit                                  |
 
 ## Naming and Identification
 
@@ -58,22 +59,23 @@ graph TB
 
 Each Tenant and GAIM has two identifiers:
 
-| Identifier | Format | Usage |
-|------------|--------|-------|
-| **ID** | UUID v4 | Internal, permanent, database keys |
-| **Name** | `^[a-z][a-z0-9]{2,11}$` | Human-friendly, URLs, DNS, K8s |
+| Identifier | Format                  | Usage                              |
+| ---------- | ----------------------- | ---------------------------------- |
+| **ID**     | UUID v4                 | Internal, permanent, database keys |
+| **Name**   | `^[a-z][a-z0-9]{2,11}$` | Human-friendly, URLs, DNS, K8s     |
 
-**Valid Name Examples:** `marvin`, `test1`, `siriuscorp`
+**Valid Name Examples:** `marvin`, `babelfish`, `heartofgold`
 
-**Invalid Names:** `2fast` (starts with number), `ab` (too short), `verylongname123` (too long)
+**Invalid Names:** `2fast` (starts with number), `ab` (too short),
+`verylongname123` (too long)
 
 ### Namespace Naming
 
-| Resource Type | Pattern | Example |
-|---------------|---------|---------|
-| Infrastructure | `living-content` | `living-content` |
-| Tenant | `tenant-{tenant_name}` | `tenant-acme` |
-| GAIM | `gaim-{gaim_name}` | `gaim-marvin` |
+| Resource Type  | Pattern                | Example             |
+| -------------- | ---------------------- | ------------------- |
+| Infrastructure | `living-content`       | `living-content`    |
+| Tenant         | `tenant-{tenant_name}` | `tenant-siriuscorp` |
+| GAIM           | `gaim-{gaim_name}`     | `gaim-marvin`       |
 
 ### Cluster Naming
 
@@ -95,9 +97,9 @@ graph TB
 
     subgraph namespaces["Kubernetes Namespaces"]
         NS_INFRA["living-content"]
-        NS_TENANT["tenant-acme"]
+        NS_TENANT["tenant-siriuscorp"]
         NS_GAIM1["gaim-marvin"]
-        NS_GAIM2["gaim-hal"]
+        NS_GAIM2["gaim-deepthought"]
     end
 
     INFRA -->|"deploys to"| NS_INFRA
@@ -108,11 +110,11 @@ graph TB
 
 ### AppProject Types
 
-| AppProject | Scope | Resources |
-|------------|-------|-----------|
-| `living-content` | Platform | ArgoCD, Tenant Manager, ApplicationSets |
-| `tenant-{name}` | Per-tenant | Tenant-specific resources |
-| `gaims` | All GAIMs | GAIM deployments (API, Worker, Frontend) |
+| AppProject       | Scope      | Resources                                |
+| ---------------- | ---------- | ---------------------------------------- |
+| `living-content` | Platform   | ArgoCD, Tenant Manager, ApplicationSets  |
+| `tenant-{name}`  | Per-tenant | Tenant-specific resources                |
+| `gaims`          | All GAIMs  | GAIM deployments (API, Worker, Frontend) |
 
 ## Isolation Mechanisms
 
@@ -129,7 +131,7 @@ flowchart LR
         W1 --> M1
     end
 
-    subgraph gaim2["gaim-hal"]
+    subgraph gaim2["gaim-deepthought"]
         A2["API"] --> R2["Redis"]
         W2["Worker"] --> R2
     end
@@ -140,6 +142,7 @@ flowchart LR
 ### RBAC Isolation
 
 AppProjects define deployment permissions:
+
 - Which namespaces can be deployed to
 - Which resources can be created
 - Which source repositories are allowed
@@ -148,12 +151,12 @@ AppProjects define deployment permissions:
 
 Per-namespace limits via ResourceQuotas and LimitRanges:
 
-| Resource | Quota |
-|----------|-------|
-| CPU | Configurable per tier |
-| Memory | Configurable per tier |
-| Pods | Configurable per tier |
-| PVCs | Configurable per tier |
+| Resource | Quota                 |
+| -------- | --------------------- |
+| CPU      | Configurable per tier |
+| Memory   | Configurable per tier |
+| Pods     | Configurable per tier |
+| PVCs     | Configurable per tier |
 
 ## GAIM Namespace Contents
 
@@ -238,7 +241,7 @@ erDiagram
 
 ## GitOps Directory Structure
 
-```
+```plaintext
 living-content-gitops/
 └── clusters/
     └── uscentral1-1/
@@ -248,7 +251,7 @@ living-content-gitops/
         │   └── applicationsets/
         │
         ├── tenants/
-        │   ├── tenant-acme/
+        │   ├── tenant-siriuscorp/
         │   │   ├── namespace.yaml
         │   │   ├── resourcequota.yaml
         │   │   └── rolebindings.yaml
@@ -267,7 +270,7 @@ living-content-gitops/
             │   ├── services.yaml
             │   └── httproutes.yaml
             │
-            └── gaim-hal/
+            └── gaim-deepthought/
                 └── ...
 ```
 

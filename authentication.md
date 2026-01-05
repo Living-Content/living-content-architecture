@@ -1,6 +1,7 @@
 # Authentication
 
-Living Content implements a multi-layer authentication system with a central auth service, GAIM-scoped access, and anonymous session support.
+Living Content implements a multi-layer authentication system with a central
+auth service, GAIM-scoped access, and anonymous session support.
 
 ## Authentication Architecture
 
@@ -38,12 +39,12 @@ flowchart TB
 
 ## Authentication Layers
 
-| Layer | Method | Used By | Purpose |
-|-------|--------|---------|---------|
-| Platform CLI | ADC (gcloud) | `lco-admin`, `lco-gaim` | Admin operations |
-| Service-to-Service | API Key | GAIM → TM | Machine operations |
-| Frontend Users | Central Auth Service | Browsers | User authentication |
-| Anonymous | Server-generated ID | Unauthenticated | Trial access |
+| Layer              | Method               | Used By                 | Purpose             |
+| ------------------ | -------------------- | ----------------------- | ------------------- |
+| Platform CLI       | ADC (gcloud)         | `lco-admin`, `lco-gaim` | Admin operations    |
+| Service-to-Service | API Key              | GAIM → TM               | Machine operations  |
+| Frontend Users     | Central Auth Service | Browsers                | User authentication |
+| Anonymous          | Server-generated ID  | Unauthenticated         | Trial access        |
 
 ## Central Auth Service
 
@@ -51,7 +52,8 @@ Single authentication endpoint for all frontend users.
 
 ### Sign-In Methods
 
-All authentication is handled server-side via backend redirects. No client-side JavaScript SDK is required.
+All authentication is handled server-side via backend redirects. No client-side
+JavaScript SDK is required.
 
 ```mermaid
 graph TB
@@ -77,10 +79,10 @@ graph TB
     CODE --> GAIM
 ```
 
-| Method | Description |
-|--------|-------------|
-| Magic Link | Passwordless email sign-in |
-| Google OAuth | Google account sign-in |
+| Method       | Description                |
+| ------------ | -------------------------- |
+| Magic Link   | Passwordless email sign-in |
+| Google OAuth | Google account sign-in     |
 
 ### Authentication Flow
 
@@ -125,33 +127,33 @@ sequenceDiagram
 
 Short-lived JWT for secure token exchange.
 
-| Property | Value |
-|----------|-------|
-| Format | JWT |
-| TTL | Short-lived |
-| Usage | One-time |
+| Property | Value                               |
+| -------- | ----------------------------------- |
+| Format   | JWT                                 |
+| TTL      | Short-lived                         |
+| Usage    | One-time                            |
 | Contents | `id_token`, `gaim_id`, `jti`, `exp` |
 
 ### Identity Platform ID Token
 
 Google-signed JWT containing user identity.
 
-| Property | Value |
-|----------|-------|
-| Format | JWT (RS256) |
-| Issuer | `https://securetoken.google.com/{project}` |
-| TTL | Standard (Identity Platform default) |
-| Contents | `uid`, `email`, `name`, `picture` |
+| Property | Value                                      |
+| -------- | ------------------------------------------ |
+| Format   | JWT (RS256)                                |
+| Issuer   | `https://securetoken.google.com/{project}` |
+| TTL      | Standard (Identity Platform default)       |
+| Contents | `uid`, `email`, `name`, `picture`          |
 
 ### API Key
 
 Machine-to-machine authentication for service calls.
 
-| Property | Value |
-|----------|-------|
-| Format | `lco_gaim_{random}` |
-| Length | 48+ characters |
-| Usage | GAIM → Tenant Manager |
+| Property | Value                 |
+| -------- | --------------------- |
+| Format   | `lco_gaim_{random}`   |
+| Length   | 48+ characters        |
+| Usage    | GAIM → Tenant Manager |
 
 ## Session Management
 
@@ -174,11 +176,11 @@ flowchart LR
     cookies --> flags
 ```
 
-| Cookie | Contents | Purpose |
-|--------|----------|---------|
-| `{session}` | GAIM-signed JWT | Access token |
-| `{refresh}` | Opaque token ID | Refresh token |
-| `{anon}` | Signed anon ID | Anonymous identity |
+| Cookie      | Contents        | Purpose            |
+| ----------- | --------------- | ------------------ |
+| `{session}` | GAIM-signed JWT | Access token       |
+| `{refresh}` | Opaque token ID | Refresh token      |
+| `{anon}`    | Signed anon ID  | Anonymous identity |
 
 ### Token Refresh
 
@@ -205,7 +207,7 @@ Server-generated identity for unauthenticated users.
 
 ### Anonymous ID Format
 
-```
+```plaintext
 anon-{uuid}
 ```
 
@@ -256,12 +258,12 @@ sequenceDiagram
 
 Per-GAIM role-based access control.
 
-| Role | Permissions |
-|------|-------------|
-| `admin` | Full GAIM management, user management |
-| `editor` | Modify content, manage sessions |
-| `viewer` | Read-only access |
-| `user` | Standard end-user access |
+| Role     | Permissions                           |
+| -------- | ------------------------------------- |
+| `admin`  | Full GAIM management, user management |
+| `editor` | Modify content, manage sessions       |
+| `viewer` | Read-only access                      |
+| `user`   | Standard end-user access              |
 
 ### Role Hierarchy
 
@@ -278,10 +280,10 @@ Path: `gaims/{gaim_id}/users/{uid}`
 
 ```json
 {
-  "uid": "abc123def456",
-  "email": "user@example.com",
-  "name": "John Doe",
-  "picture": "https://example.com/photo.jpg",
+  "uid": "dent42",
+  "email": "arthur@heartofgold.ship",
+  "name": "Arthur Dent",
+  "picture": "https://guide.galaxy/arthur.jpg",
   "role": "editor",
   "created_at": "2024-01-17T08:00:00Z",
   "last_active": "2024-01-22T16:30:00Z"
@@ -301,21 +303,21 @@ flowchart LR
     VOL --> APP["Application"]
 ```
 
-| Secret | Path | Purpose |
-|--------|------|---------|
-| Redis password | `/run/credentials/{redis}` | Redis auth |
+| Secret           | Path                       | Purpose      |
+| ---------------- | -------------------------- | ------------ |
+| Redis password   | `/run/credentials/{redis}` | Redis auth   |
 | MongoDB password | `/run/credentials/{mongo}` | MongoDB auth |
 
 ### Auth Service Secrets
 
 The central auth service uses these secrets from Secret Manager:
 
-| Secret | Purpose |
-|--------|---------|
-| `{signing-key}` | JWT signing for auth codes |
-| `{identity-api-key}` | Identity Platform REST API access |
-| `{oauth-client-id}` | Google OAuth client ID |
-| `{oauth-client-secret}` | Google OAuth client secret |
+| Secret                  | Purpose                           |
+| ----------------------- | --------------------------------- |
+| `{signing-key}`         | JWT signing for auth codes        |
+| `{identity-api-key}`    | Identity Platform REST API access |
+| `{oauth-client-id}`     | Google OAuth client ID            |
+| `{oauth-client-secret}` | Google OAuth client secret        |
 
 ### Application Secrets
 
@@ -328,12 +330,12 @@ flowchart LR
     KMS --> APP["Decrypted Secret"]
 ```
 
-| Feature | Description |
-|---------|-------------|
-| Encryption | Fernet (symmetric) |
-| Key Storage | Secret Manager (DEK) |
-| Key Protection | Cloud KMS |
-| Hot Reload | Yes (async runtime) |
+| Feature        | Description          |
+| -------------- | -------------------- |
+| Encryption     | Fernet (symmetric)   |
+| Key Storage    | Secret Manager (DEK) |
+| Key Protection | Cloud KMS            |
+| Hot Reload     | Yes (async runtime)  |
 
 ## CLI Authentication
 
@@ -374,7 +376,8 @@ flowchart TB
 
 ## Rate Limiting
 
-Per-endpoint limits enforced at middleware layer. Limits vary by endpoint sensitivity.
+Per-endpoint limits enforced at middleware layer. Limits vary by endpoint
+sensitivity.
 
 ## Related Documentation
 

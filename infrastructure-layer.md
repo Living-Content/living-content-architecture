@@ -1,6 +1,7 @@
 # Infrastructure Layer (living-content-admin)
 
-The infrastructure layer manages platform-level resources, tenant lifecycle, and GitOps deployment pipelines.
+The infrastructure layer manages platform-level resources, tenant lifecycle, and
+GitOps deployment pipelines.
 
 ## Component Architecture
 
@@ -53,14 +54,15 @@ graph TB
 
 Central authentication service handling all user sign-in flows.
 
-| Property | Value |
-|----------|-------|
-| **Domain** | `auth.service.livingcontent.co` |
-| **Runtime** | Cloud Run (serverless) |
-| **Purpose** | Magic link + Google OAuth authentication |
-| **Integrations** | Identity Platform, Firestore |
+| Property         | Value                                    |
+| ---------------- | ---------------------------------------- |
+| **Domain**       | `auth.service.livingcontent.co`          |
+| **Runtime**      | Cloud Run (serverless)                   |
+| **Purpose**      | Magic link + Google OAuth authentication |
+| **Integrations** | Identity Platform, Firestore             |
 
 **Responsibilities:**
+
 - Magic link (passwordless email) sign-in
 - Google OAuth sign-in
 - Auth code generation and validation
@@ -70,11 +72,11 @@ Central authentication service handling all user sign-in flows.
 
 Automatic retry and consistency service for GitOps sync operations.
 
-| Property | Value |
-|----------|-------|
+| Property    | Value                                            |
+| ----------- | ------------------------------------------------ |
 | **Runtime** | Cloud Run (`min_instances=1`, `max_instances=1`) |
-| **CPU** | Always allocated (`cpu_throttling=false`) |
-| **Purpose** | Retry failed syncs, consistency checking |
+| **CPU**     | Always allocated (`cpu_throttling=false`)        |
+| **Purpose** | Retry failed syncs, consistency checking         |
 
 **Background Loops:**
 
@@ -96,6 +98,7 @@ graph LR
 Uses exponential backoff with jitter, capped at a maximum delay.
 
 **Error Classification:**
+
 - **Retryable**: `network`, `rate_limit`, `conflict`, `transient`, `unknown`
 - **Permanent**: `template`, `validation`, `permission`
 
@@ -105,13 +108,14 @@ Uses exponential backoff with jitter, capped at a maximum delay.
 
 Central API for CRUD operations on tenants and GAIMs.
 
-| Property | Value |
-|----------|-------|
-| **Domain** | `{cluster}.tm.livingcontent.co` |
-| **Runtime** | GKE Deployment |
+| Property     | Value                              |
+| ------------ | ---------------------------------- |
+| **Domain**   | `{cluster}.tm.livingcontent.co`    |
+| **Runtime**  | GKE Deployment                     |
 | **Database** | Firestore (shared across clusters) |
 
 **Responsibilities:**
+
 - Tenant and GAIM lifecycle management
 - Template rendering (Jinja2 → K8s manifests)
 - GitOps manifest generation and push
@@ -126,13 +130,14 @@ Per-endpoint rate limits enforced at GLB layer.
 
 GitOps continuous deployment controller.
 
-| Property | Value |
-|----------|-------|
-| **Domain** | `{cluster}.argocd.livingcontent.co` |
-| **Runtime** | GKE (control plane + repo-server) |
-| **Source** | `living-content-gitops` repository |
+| Property    | Value                               |
+| ----------- | ----------------------------------- |
+| **Domain**  | `{cluster}.argocd.livingcontent.co` |
+| **Runtime** | GKE (control plane + repo-server)   |
+| **Source**  | `living-content-gitops` repository  |
 
 **Components:**
+
 - Control Plane (server, repo-server)
 - Git Auth (GitHub App credentials)
 - API Auth (programmatic access token)
@@ -154,7 +159,7 @@ flowchart LR
 
     subgraph manifests["Manifests Repository"]
         M1["clusters/uscentral1-1/"]
-        M2["tenants/tenant-acme/"]
+        M2["tenants/tenant-siriuscorp/"]
         M3["gaims/gaim-marvin/"]
     end
 
@@ -169,6 +174,7 @@ flowchart LR
 ### Template Variables
 
 **GAIM Templates:**
+
 - `gaim_id`, `gaim_name`, `gaim_display_name`
 - `api_image`, `worker_image`, `redis_image`, `mongo_image`
 - `replicas`, `autoscaling` (min/max/target_cpu/scale_windows)
@@ -176,6 +182,7 @@ flowchart LR
 - `init_containers`, `volume_mounts`, `volumes`
 
 **Tenant Templates:**
+
 - `TENANT_ID`, `TENANT_NAME`, `TENANT_DISPLAY_NAME`
 - `RESOURCE_QUOTA`
 
@@ -183,27 +190,27 @@ flowchart LR
 
 Automatic discovery and deployment of tenants and GAIMs.
 
-| ApplicationSet | Pattern | Discovery |
-|----------------|---------|-----------|
-| `{cluster}-tenants` | `clusters/{cluster}/tenants/*/` | Git files generator |
-| `{cluster}-gaims` | `clusters/{cluster}/gaims/*/` | Git directories generator |
+| ApplicationSet      | Pattern                         | Discovery                 |
+| ------------------- | ------------------------------- | ------------------------- |
+| `{cluster}-tenants` | `clusters/{cluster}/tenants/*/` | Git files generator       |
+| `{cluster}-gaims`   | `clusters/{cluster}/gaims/*/`   | Git directories generator |
 
 ## GCP Infrastructure
 
 ### Resource Summary
 
-| Resource | Technology | Purpose |
-|----------|------------|---------|
-| GKE Clusters | Kubernetes | Container orchestration |
-| Global Load Balancer | Gateway API | Traffic routing, TLS |
-| Certificate Manager | Wildcard certs | SSL/TLS certificates |
-| Firestore | NoSQL | Metadata, config, users |
-| Filestore | NFS (1TB) | Shared RAG storage |
-| Cloud KMS | Key Management | etcd encryption |
-| Secret Manager | Secrets | Credentials, API keys |
-| Artifact Registry | Container registry | Docker images |
-| Cloud Build | CI/CD | Image builds |
-| Identity Platform | Identity | User authentication |
+| Resource             | Technology         | Purpose                 |
+| -------------------- | ------------------ | ----------------------- |
+| GKE Clusters         | Kubernetes         | Container orchestration |
+| Global Load Balancer | Gateway API        | Traffic routing, TLS    |
+| Certificate Manager  | Wildcard certs     | SSL/TLS certificates    |
+| Firestore            | NoSQL              | Metadata, config, users |
+| Filestore            | NFS (1TB)          | Shared RAG storage      |
+| Cloud KMS            | Key Management     | etcd encryption         |
+| Secret Manager       | Secrets            | Credentials, API keys   |
+| Artifact Registry    | Container registry | Docker images           |
+| Cloud Build          | CI/CD              | Image builds            |
+| Identity Platform    | Identity           | User authentication     |
 
 ### Cluster Creation
 
@@ -212,6 +219,7 @@ lco-admin gcp cluster create --region us-central1
 ```
 
 **Infrastructure Created:**
+
 - GKE cluster with Gateway API enabled
 - VPC and subnet (cluster-specific)
 - Firewall rules
@@ -239,19 +247,19 @@ graph TB
 
 **Key Commands:**
 
-| Command | Purpose |
-|---------|---------|
-| `lco-admin health all` | Comprehensive system health check |
-| `lco-admin tenant create --tenant-name=acme` | Create new tenant |
-| `lco-admin gaim create --gaim-name=marvin` | Create new GAIM |
-| `lco-admin tm build && push && deploy` | Deploy Tenant Manager |
-| `lco-admin service reconciler deploy` | Deploy Reconciler |
-| `lco-admin gcp cluster create --region=us-central1` | Create GKE cluster |
-| `lco-admin argocd create control-plane` | Setup ArgoCD |
+| Command                                             | Purpose                           |
+| --------------------------------------------------- | --------------------------------- |
+| `lco-admin health all`                              | Comprehensive system health check |
+| `lco-admin tenant create --tenant-name=siriuscorp`  | Create new tenant                 |
+| `lco-admin gaim create --gaim-name=marvin`          | Create new GAIM                   |
+| `lco-admin tm build && push && deploy`              | Deploy Tenant Manager             |
+| `lco-admin service reconciler deploy`               | Deploy Reconciler                 |
+| `lco-admin gcp cluster create --region=us-central1` | Create GKE cluster                |
+| `lco-admin argocd create control-plane`             | Setup ArgoCD                      |
 
 ## Source Code Structure
 
-```
+```plaintext
 living-content-admin/
 ├── lco-admin/              # CLI tool
 │   └── src/

@@ -1,6 +1,8 @@
 # Networking
 
-Living Content uses Google Cloud's Gateway API with a Global Load Balancer for traffic routing, TLS termination, and host-based routing to services across clusters.
+Living Content uses Google Cloud's Gateway API with a Global Load Balancer for
+traffic routing, TLS termination, and host-based routing to services across
+clusters.
 
 ## Traffic Architecture
 
@@ -74,26 +76,26 @@ graph TB
 
 ### Domain Patterns
 
-| Service Type | Pattern | Example |
-|--------------|---------|---------|
-| GAIM API | `{gaim}.api.livingcontent.co` | `marvin.api.livingcontent.co` |
-| GAIM Hub | `{gaim}.hub.livingcontent.co` | `marvin.hub.livingcontent.co` |
-| Frontend JS | `assets.livingcontent.co` | CDN-hosted embeddable JS |
-| Tenant Manager | `{cluster}.tm.livingcontent.co` | `uscentral1-1.tm.livingcontent.co` |
-| ArgoCD | `{cluster}.argocd.livingcontent.co` | `uscentral1-1.argocd.livingcontent.co` |
-| Auth Service | `auth.service.livingcontent.co` | - |
+| Service Type   | Pattern                             | Example                                |
+| -------------- | ----------------------------------- | -------------------------------------- |
+| GAIM API       | `{gaim}.api.livingcontent.co`       | `marvin.api.livingcontent.co`          |
+| GAIM Hub       | `{gaim}.hub.livingcontent.co`       | `marvin.hub.livingcontent.co`          |
+| Frontend JS    | `assets.livingcontent.co`           | CDN-hosted embeddable JS               |
+| Tenant Manager | `{cluster}.tm.livingcontent.co`     | `uscentral1-1.tm.livingcontent.co`     |
+| ArgoCD         | `{cluster}.argocd.livingcontent.co` | `uscentral1-1.argocd.livingcontent.co` |
+| Auth Service   | `auth.service.livingcontent.co`     | -                                      |
 
 ## Wildcard Certificates
 
 Managed via Google Certificate Manager with DNS authorization.
 
-| Certificate | Domain | Purpose |
-|-------------|--------|---------|
-| `living-content-cert` | `*.livingcontent.co` | Root wildcard |
-| `living-content-api-cert` | `*.api.livingcontent.co` | GAIM APIs |
-| `living-content-hub-cert` | `*.hub.livingcontent.co` | GAIM Hubs |
-| `living-content-assets-cert` | `assets.livingcontent.co` | Frontend CDN |
-| `living-content-tm-cert` | `*.tm.livingcontent.co` | Tenant Managers |
+| Certificate                  | Domain                      | Purpose          |
+| ---------------------------- | --------------------------- | ---------------- |
+| `living-content-cert`        | `*.livingcontent.co`        | Root wildcard    |
+| `living-content-api-cert`    | `*.api.livingcontent.co`    | GAIM APIs        |
+| `living-content-hub-cert`    | `*.hub.livingcontent.co`    | GAIM Hubs        |
+| `living-content-assets-cert` | `assets.livingcontent.co`   | Frontend CDN     |
+| `living-content-tm-cert`     | `*.tm.livingcontent.co`     | Tenant Managers  |
 | `living-content-argocd-cert` | `*.argocd.livingcontent.co` | ArgoCD instances |
 
 ## Gateway API Configuration
@@ -113,7 +115,7 @@ spec:
       value: living-content-global-ip
   listeners:
     - name: https-api
-      hostname: "*.api.livingcontent.co"
+      hostname: '*.api.livingcontent.co'
       port: 443
       protocol: HTTPS
       tls:
@@ -121,7 +123,7 @@ spec:
         certificateRefs:
           - name: living-content-api-cert
     - name: https-hub
-      hostname: "*.hub.livingcontent.co"
+      hostname: '*.hub.livingcontent.co'
       port: 443
       protocol: HTTPS
       tls:
@@ -144,7 +146,7 @@ spec:
       namespace: living-content
       sectionName: https-api
   hostnames:
-    - "marvin.api.livingcontent.co"
+    - 'marvin.api.livingcontent.co'
   rules:
     - backendRefs:
         - name: api-svc
@@ -198,13 +200,13 @@ flowchart LR
 
 ### Global Load Balancer Features
 
-| Feature | Configuration |
-|---------|---------------|
-| Protocol | HTTPS (external), HTTP (internal) |
-| SSL Policy | Modern ciphers only |
-| HTTP/2 | Enabled |
-| Session Affinity | None (stateless) |
-| Health Checks | HTTP `/health` endpoint |
+| Feature          | Configuration                     |
+| ---------------- | --------------------------------- |
+| Protocol         | HTTPS (external), HTTP (internal) |
+| SSL Policy       | Modern ciphers only               |
+| HTTP/2           | Enabled                           |
+| Session Affinity | None (stateless)                  |
+| Health Checks    | HTTP `/health` endpoint           |
 
 ### Network Endpoint Groups (NEGs)
 
@@ -217,11 +219,11 @@ NEGs provide direct pod-level load balancing:
 
 ### Health Checks
 
-| Endpoint | Interval | Threshold |
-|----------|----------|-----------|
+| Endpoint      | Interval   | Threshold |
+| ------------- | ---------- | --------- |
 | API `/health` | Configured | Threshold |
-| Hub `/` | Configured | Threshold |
-| TM `/health` | Configured | Threshold |
+| Hub `/`       | Configured | Threshold |
+| TM `/health`  | Configured | Threshold |
 
 ## Rate Limiting
 
@@ -229,11 +231,11 @@ Implemented via Cloud Armor security policies at the GLB.
 
 ### Default Limits
 
-| Endpoint | Rate Limit |
-|----------|------------|
-| Auth endpoints | Restricted |
+| Endpoint        | Rate Limit      |
+| --------------- | --------------- |
+| Auth endpoints  | Restricted      |
 | Query endpoints | Per-user limits |
-| Default | Standard |
+| Default         | Standard        |
 
 ### Cloud Armor Policy
 
@@ -285,11 +287,12 @@ flowchart TB
 
     WILDCARD --> glb
     URLMAP -->|"marvin.api"| C1
-    URLMAP -->|"hal.api"| C2
-    URLMAP -->|"dave.api"| C3
+    URLMAP -->|"deepthought.api"| C2
+    URLMAP -->|"zaphod.api"| C3
 ```
 
-Each GAIM's HTTPRoute specifies which cluster handles its traffic. Future multi-region GAIMs could use weighted routing.
+Each GAIM's HTTPRoute specifies which cluster handles its traffic. Future
+multi-region GAIMs could use weighted routing.
 
 ## WebSocket Support
 
@@ -314,11 +317,11 @@ sequenceDiagram
 
 ### WebSocket Configuration
 
-| Parameter | Value |
-|-----------|-------|
-| Timeout | Extended for streaming |
-| Ping Interval | Configured |
-| Max Frame Size | 64KB |
+| Parameter      | Value                  |
+| -------------- | ---------------------- |
+| Timeout        | Extended for streaming |
+| Ping Interval  | Configured             |
+| Max Frame Size | 64KB                   |
 
 ## Related Documentation
 

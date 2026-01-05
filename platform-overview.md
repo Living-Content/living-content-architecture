@@ -2,7 +2,9 @@
 
 ## System Architecture
 
-Living Content is a GitOps-driven multi-tenant AI infrastructure platform providing automated provisioning, deployment, and management for isolated tenant environments.
+Living Content is a GitOps-driven multi-tenant AI infrastructure platform
+providing automated provisioning, deployment, and management for isolated tenant
+environments.
 
 ```mermaid
 flowchart TB
@@ -208,24 +210,24 @@ sequenceDiagram
 
 ## Technology Stack
 
-| Layer | Component | Technology |
-|-------|-----------|------------|
-| **Cloud Platform** | Infrastructure | Google Cloud Platform |
-| **Container Orchestration** | Runtime | Google Kubernetes Engine (GKE) |
-| **Load Balancing** | Traffic | Gateway API + Global Load Balancer |
-| **GitOps** | Deployment | ArgoCD + ApplicationSets |
-| **Serverless** | Platform Services | Cloud Run |
-| **Database** | Metadata/Config | Firestore |
-| **Hub** | Tenant Management UI | Vanilla JS (GKE) |
-| **Frontend** | User-facing UI | Vanilla JS (Embeddable, Event-based) |
-| **Database** | Application Data | MongoDB |
-| **Cache/Queue** | Messaging | Redis (Streams + Pub/Sub) |
-| **Vector Store** | Embeddings | LanceDB |
-| **File Storage** | RAG Data | Filestore (NFS) |
-| **Secrets** | Credentials | Secret Manager + KMS |
-| **Auth** | Identity | Identity Platform |
-| **Registry** | Images | Artifact Registry |
-| **CI/CD** | Builds | Cloud Build |
+| Layer                       | Component            | Technology                           |
+| --------------------------- | -------------------- | ------------------------------------ |
+| **Cloud Platform**          | Infrastructure       | Google Cloud Platform                |
+| **Container Orchestration** | Runtime              | Google Kubernetes Engine (GKE)       |
+| **Load Balancing**          | Traffic              | Gateway API + Global Load Balancer   |
+| **GitOps**                  | Deployment           | ArgoCD + ApplicationSets             |
+| **Serverless**              | Platform Services    | Cloud Run                            |
+| **Database**                | Metadata/Config      | Firestore                            |
+| **Hub**                     | Tenant Management UI | Vanilla JS (GKE)                     |
+| **Frontend**                | User-facing UI       | Vanilla JS (Embeddable, Event-based) |
+| **Database**                | Application Data     | MongoDB                              |
+| **Cache/Queue**             | Messaging            | Redis (Streams + Pub/Sub)            |
+| **Vector Store**            | Embeddings           | LanceDB                              |
+| **File Storage**            | RAG Data             | Filestore (NFS)                      |
+| **Secrets**                 | Credentials          | Secret Manager + KMS                 |
+| **Auth**                    | Identity             | Identity Platform                    |
+| **Registry**                | Images               | Artifact Registry                    |
+| **CI/CD**                   | Builds               | Cloud Build                          |
 
 ## Design Principles
 

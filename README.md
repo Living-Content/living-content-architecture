@@ -1,5 +1,8 @@
 # Living Content Platform Architecture
 
+> "I think the problem, to be quite honest with you, is that you've never
+> actually known what the question is." — Deep Thought
+
 A comprehensive architectural reference for the Living Content multi-tenant AI
 infrastructure platform.
 

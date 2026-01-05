@@ -1,6 +1,7 @@
 # Observability
 
-Living Content implements comprehensive observability through Prometheus metrics, structured logging, health checks, and resilience patterns.
+Living Content implements comprehensive observability through Prometheus
+metrics, structured logging, health checks, and resilience patterns.
 
 ## Observability Architecture
 
@@ -52,7 +53,7 @@ spec:
       app: api
   podMetricsEndpoints:
     - port: metrics
-      interval: {configured}
+      interval: { configured }
 ```
 
 ### Metric Categories
@@ -83,21 +84,22 @@ graph TB
 
 ### Metric Reference
 
-| Metric | Type | Labels | Description |
-|--------|------|--------|-------------|
-| `gaim_http_requests_total` | Counter | method, path, status | HTTP request count |
-| `gaim_http_duration_seconds` | Histogram | method, path | Request latency |
-| `gaim_tasks_total` | Counter | task_name, status | Task execution count |
-| `gaim_task_duration_seconds` | Histogram | task_name | Task latency |
-| `gaim_tasks_in_flight` | Gauge | task_name | Currently executing tasks |
-| `gaim_task_queue_depth` | Gauge | - | Pending tasks in queue |
-| `gaim_llm_calls_total` | Counter | model, provider | LLM API calls |
-| `gaim_llm_tokens_total` | Counter | model, direction | Token usage (input/output) |
-| `gaim_websocket_connections_active` | Gauge | - | Active WebSocket connections |
+| Metric                              | Type      | Labels               | Description                  |
+| ----------------------------------- | --------- | -------------------- | ---------------------------- |
+| `gaim_http_requests_total`          | Counter   | method, path, status | HTTP request count           |
+| `gaim_http_duration_seconds`        | Histogram | method, path         | Request latency              |
+| `gaim_tasks_total`                  | Counter   | task_name, status    | Task execution count         |
+| `gaim_task_duration_seconds`        | Histogram | task_name            | Task latency                 |
+| `gaim_tasks_in_flight`              | Gauge     | task_name            | Currently executing tasks    |
+| `gaim_task_queue_depth`             | Gauge     | -                    | Pending tasks in queue       |
+| `gaim_llm_calls_total`              | Counter   | model, provider      | LLM API calls                |
+| `gaim_llm_tokens_total`             | Counter   | model, direction     | Token usage (input/output)   |
+| `gaim_websocket_connections_active` | Gauge     | -                    | Active WebSocket connections |
 
 ### Auto-Added Labels
 
 GCP Managed Prometheus automatically adds:
+
 - `namespace`
 - `pod`
 - `cluster`
@@ -164,11 +166,11 @@ sequenceDiagram
 
 ### Probe Configuration
 
-| Probe | Endpoint | Type |
-|-------|----------|------|
-| API Liveness | `/health` | HTTP |
-| API Readiness | `/health` | HTTP |
-| Worker Liveness | File check | File |
+| Probe            | Endpoint   | Type |
+| ---------------- | ---------- | ---- |
+| API Liveness     | `/health`  | HTTP |
+| API Readiness    | `/health`  | HTTP |
+| Worker Liveness  | File check | File |
 | Worker Readiness | File check | File |
 
 ## Resilience Patterns
@@ -244,11 +246,11 @@ stateDiagram-v2
     HalfOpen --> Open: Failure
 ```
 
-| State | Behavior |
-|-------|----------|
-| **Closed** | Normal operation, count failures |
-| **Open** | Reject requests immediately |
-| **Half-Open** | Allow limited requests to test |
+| State         | Behavior                         |
+| ------------- | -------------------------------- |
+| **Closed**    | Normal operation, count failures |
+| **Open**      | Reject requests immediately      |
+| **Half-Open** | Allow limited requests to test   |
 
 ### Backpressure Control
 
@@ -263,11 +265,11 @@ flowchart TB
     REJECT --> RETRY["Retry-After: {delay}"]
 ```
 
-| Threshold | Action |
-|-----------|--------|
-| Low | Normal processing |
-| Medium | Accept with warning log |
-| High | Reject with 503 + Retry-After |
+| Threshold | Action                        |
+| --------- | ----------------------------- |
+| Low       | Normal processing             |
+| Medium    | Accept with warning log       |
+| High      | Reject with 503 + Retry-After |
 
 ### Cooperative Cancellation
 
@@ -311,10 +313,10 @@ flowchart TB
     COUNT -->|"max reached"| FAIL["Give Up"]
 ```
 
-| Error Type | Behavior |
-|------------|----------|
+| Error Type     | Behavior                           |
+| -------------- | ---------------------------------- |
 | Infrastructure | Exponential backoff, never give up |
-| Application | Count failures, give up after 10 |
+| Application    | Count failures, give up after 10   |
 
 ## Logging
 
@@ -327,10 +329,10 @@ JSON-formatted logs for Cloud Logging integration.
   "severity": "INFO",
   "message": "Query processed",
   "timestamp": "2024-01-22T16:30:00.123Z",
-  "trace": "projects/xxx/traces/abc123",
+  "trace": "projects/xxx/traces/dontpanic42",
   "labels": {
     "gaim_id": "660e8400-...",
-    "user_id": "abc123def456",
+    "user_id": "dent42",
     "request_id": "req-456"
   },
   "httpRequest": {
@@ -344,13 +346,13 @@ JSON-formatted logs for Cloud Logging integration.
 
 ### Log Levels
 
-| Level | Usage |
-|-------|-------|
-| DEBUG | Detailed debugging info |
-| INFO | Normal operations |
-| WARNING | Potential issues |
-| ERROR | Failures requiring attention |
-| CRITICAL | System-level failures |
+| Level    | Usage                        |
+| -------- | ---------------------------- |
+| DEBUG    | Detailed debugging info      |
+| INFO     | Normal operations            |
+| WARNING  | Potential issues             |
+| ERROR    | Failures requiring attention |
+| CRITICAL | System-level failures        |
 
 ### Correlation
 
@@ -358,10 +360,10 @@ Request tracing across services:
 
 ```mermaid
 flowchart LR
-    REQ["Request"] --> API["API<br/>trace: abc123"]
-    API --> REDIS["Redis<br/>trace: abc123"]
-    REDIS --> WORKER["Worker<br/>trace: abc123"]
-    WORKER --> TOOL["Tool<br/>trace: abc123"]
+    REQ["Request"] --> API["API<br/>trace: dontpanic42"]
+    API --> REDIS["Redis<br/>trace: dontpanic42"]
+    REDIS --> WORKER["Worker<br/>trace: dontpanic42"]
+    WORKER --> TOOL["Tool<br/>trace: dontpanic42"]
 ```
 
 ## Infrastructure Health Monitor
@@ -386,11 +388,11 @@ flowchart TB
     monitor --> MONGO["MongoDB"]
 ```
 
-| Feature | Description |
-|---------|-------------|
-| Deduplication | One log per failure, not per task |
-| Recovery Detection | Log when service recovers |
-| Backoff Coordination | Shared backoff state |
+| Feature              | Description                       |
+| -------------------- | --------------------------------- |
+| Deduplication        | One log per failure, not per task |
+| Recovery Detection   | Log when service recovers         |
+| Backoff Coordination | Shared backoff state              |
 
 ## Queue Monitoring
 
@@ -411,13 +413,13 @@ GET /system/queue
 
 ### Queue Alerts
 
-| Condition | Alert |
-|-----------|-------|
-| Depth elevated | Warning |
-| Depth high | Critical |
-| Message age warning | Warning |
+| Condition            | Alert    |
+| -------------------- | -------- |
+| Depth elevated       | Warning  |
+| Depth high           | Critical |
+| Message age warning  | Warning  |
 | Message age critical | Critical |
-| No consumers | Critical |
+| No consumers         | Critical |
 
 ## Dashboard Recommendations
 
@@ -432,12 +434,12 @@ GET /system/queue
 
 ### SLO Targets
 
-| Metric | Target |
-|--------|--------|
-| Availability | 99.9% |
-| Latency P95 | Within SLO targets |
-| Error Rate | < 0.1% |
-| Queue Depth | Within threshold |
+| Metric       | Target             |
+| ------------ | ------------------ |
+| Availability | 99.9%              |
+| Latency P95  | Within SLO targets |
+| Error Rate   | < 0.1%             |
+| Queue Depth  | Within threshold   |
 
 ## Related Documentation
 
