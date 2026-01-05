@@ -288,7 +288,7 @@ flowchart TB
     WILDCARD --> glb
     URLMAP -->|"marvin.api"| C1
     URLMAP -->|"deepthought.api"| C2
-    URLMAP -->|"zaphod.api"| C3
+    URLMAP -->|"theguide.api"| C3
 ```
 
 Each GAIM's HTTPRoute specifies which cluster handles its traffic. Future

@@ -256,7 +256,7 @@ living-content-gitops/
         │   │   ├── resourcequota.yaml
         │   │   └── rolebindings.yaml
         │   │
-        │   └── tenant-globex/
+        │   └── tenant-megadodo/
         │       └── ...
         │
         └── gaims/
