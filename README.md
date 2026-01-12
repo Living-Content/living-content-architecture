@@ -69,4 +69,4 @@ graph TB
 | CLI         | Purpose             | Key Commands                                           |
 | ----------- | ------------------- | ------------------------------------------------------ |
 | `lco-admin` | Platform management | `tenant create`, `gaim create`, `gcp cluster create`   |
-| `lco-gaim`  | GAIM operations     | `config get/set`, `env local/remote`, `docker up/down` |
+| `lco-gaim`  | GAIM operations     | `gaim init/activate`, `tools selector sync push`, `docker up` |

@@ -158,30 +158,27 @@ Path: `gaims/{gaim_id}/env/{env}/config/current`
 
 ```json
 {
-  "settings": {
-    "llm_clients": {
-      "vertex_ai": { "enabled": true },
-      "claude": { "enabled": false },
-      "openai": { "enabled": true }
+  "bundle_name": "gaim/default",
+  "bundle_version": "2026.01.12.023038",
+  "overrides": {
+    "config": {
+      "frontend": { "theme": "custom-theme" },
+      "tools": { "knowledge": { "enabled": true } }
     },
-    "tools": {
-      "knowledge": { "enabled": true, "reindex": "auto" },
-      "image_generator": { "enabled": true }
+    "prompts": {
+      "persona": {
+        "guardrails": { "content": "Custom guardrails..." }
+      }
     }
   },
-  "system": {
-    "lineage": { "enabled": true },
-    "ingress": { "rate_limit": 100 }
-  },
-  "prompts": {
-    "persona": "You are a helpful AI assistant..."
-  },
-  "fe": {
-    "theme": "light",
-    "features": { "voice_input": true }
-  }
+  "updated_at": "2026-01-11T12:00:00Z",
+  "updated_by": "user@example.com"
 }
 ```
+
+**History**: `gaims/{gaim_id}/env/{env}/config/history-{timestamp}` (max 5 retained)
+
+**Resolution**: Bundle defaults from GCS merged with sparse overrides at runtime.
 
 ## MongoDB
 

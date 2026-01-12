@@ -347,7 +347,7 @@ gcloud auth application-default login
 
 # CLI uses ADC automatically
 lco-admin tenant list
-lco-gaim config get api.settings
+lco-gaim config get
 ```
 
 ### API Key Generation

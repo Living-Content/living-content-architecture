@@ -218,6 +218,15 @@ Automatic discovery and deployment of tenants and GAIMs.
 lco-admin gcp cluster create --region us-central1
 ```
 
+**Default Node Pool Configuration:**
+
+| Setting      | Default Value   |
+| ------------ | --------------- |
+| Machine Type | `e2-standard-4` |
+| Disk Size    | `50GB`          |
+| Min Nodes    | `1`             |
+| Max Nodes    | `10`            |
+
 **Infrastructure Created:**
 
 - GKE cluster with Gateway API enabled
@@ -225,7 +234,17 @@ lco-admin gcp cluster create --region us-central1
 - Firewall rules
 - Cloud KMS keyring for etcd encryption
 - Filestore instance (1TB)
-- Node pools with autoscaling (1-10 nodes)
+- Node pool: `living-content-{cluster_name}-node-pool`
+
+### Cluster Updates
+
+```bash
+# Update cluster configuration via Terraform
+lco-admin gcp cluster update --cluster-name uscentral1-1 --region us-central1
+```
+
+The update command applies changes via CDKTF/Terraform. Changing machine type or
+disk size recreates the node pool (causes downtime as pods reschedule).
 
 ## CLI Tool (lco-admin)
 

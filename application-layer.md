@@ -1,6 +1,8 @@
 # Application Layer (living-content-gaim)
 
-The application layer provides the GAIM (Generative AI Manager) runtime, delivering intelligent tool routing, RAG-based knowledge management, and real-time streaming responses.
+The application layer provides the GAIM (Generative AI Manager) runtime,
+delivering intelligent tool routing, RAG-based knowledge management, and
+real-time streaming responses.
 
 ## Service Architecture
 
@@ -54,13 +56,14 @@ graph TB
 
 HTTP server handling requests and enqueuing background jobs.
 
-| Property | Value |
-|----------|-------|
-| **Domain** | `{gaim}.api.livingcontent.co` |
-| **Framework** | FastAPI |
-| **Scaling** | Horizontal (HPA) |
+| Property      | Value                         |
+| ------------- | ----------------------------- |
+| **Domain**    | `{gaim}.api.livingcontent.co` |
+| **Framework** | FastAPI                       |
+| **Scaling**   | Horizontal (HPA)              |
 
 **Responsibilities:**
+
 - HTTP routing and request handling
 - Token validation and authentication
 - Job enqueueing to Redis Streams
@@ -68,6 +71,7 @@ HTTP server handling requests and enqueuing background jobs.
 - Configuration management
 
 **Middleware Stack (Request Order):**
+
 1. `InitializationMiddleware` - App readiness check
 2. `AuthMiddleware` - Token validation
 3. `RateLimitMiddleware` - User + IP rate limiting
@@ -79,12 +83,13 @@ HTTP server handling requests and enqueuing background jobs.
 
 Background job processor using Redis Streams.
 
-| Property | Value |
-|----------|-------|
+| Property      | Value                  |
+| ------------- | ---------------------- |
 | **Framework** | Taskiq + Redis Streams |
-| **Scaling** | Horizontal (HPA) |
+| **Scaling**   | Horizontal (HPA)       |
 
 **Responsibilities:**
+
 - Query processing with tool selection
 - Tool execution and streaming
 - Result delivery via Redis Pub/Sub
@@ -93,33 +98,35 @@ Background job processor using Redis Streams.
 
 **Task Types:**
 
-| Task | Purpose |
-|------|---------|
-| `process_query` | Query processing |
-| `deliver_notification` | WebSocket delivery |
-| `build_lineage_manifest` | EQTY manifest |
+| Task                     | Purpose            |
+| ------------------------ | ------------------ |
+| `process_query`          | Query processing   |
+| `deliver_notification`   | WebSocket delivery |
+| `build_lineage_manifest` | EQTY manifest      |
 
 ### Hub (Tenant Management)
 
-Management interface for tenants to configure and manage their GAIMs. Includes both a web UI and CLI.
+Management interface for tenants to configure and manage their GAIMs. Includes
+both a web UI and CLI.
 
-| Property | Value |
-|----------|-------|
-| **Web UI Domain** | `{gaim}.hub.livingcontent.co` |
-| **CLI** | `lco-gaim` |
-| **Framework** | Vanilla JS (custom event-based architecture) |
-| **Runtime** | GKE Deployment (web), Local (CLI) |
+| Property          | Value                                        |
+| ----------------- | -------------------------------------------- |
+| **Web UI Domain** | `{gaim}.hub.livingcontent.co`                |
+| **CLI**           | `lco-gaim`                                   |
+| **Framework**     | Vanilla JS (custom event-based architecture) |
+| **Runtime**       | GKE Deployment (web), Local (CLI)            |
 
 ### Frontend (Embeddable)
 
-User-facing UI that interfaces with the GAIM API. Embeddable on any customer site.
+User-facing UI that interfaces with the GAIM API. Embeddable on any customer
+site.
 
-| Property | Value |
-|----------|-------|
-| **Framework** | Vanilla JS (custom event-based architecture) |
-| **Deployment** | Embeddable JS file (deployable on any site) |
-| **Distribution** | CDN-hosted |
-| **Alternative** | Pipeline deployments can bypass FE and call GAIM API directly |
+| Property         | Value                                                         |
+| ---------------- | ------------------------------------------------------------- |
+| **Framework**    | Vanilla JS (custom event-based architecture)                  |
+| **Deployment**   | Embeddable JS file (deployable on any site)                   |
+| **Distribution** | CDN-hosted                                                    |
+| **Alternative**  | Pipeline deployments can bypass FE and call GAIM API directly |
 
 ## Core Components
 
@@ -146,13 +153,13 @@ flowchart LR
 
 **Configuration:** `tools.selector.*`
 
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `enabled` | `true` | Enable tool selection |
-| `embed_model` | `text-embedding-3-small` | Embedding model |
-| `top_k` | `6` | Candidates to retrieve |
-| `accept_threshold` | `0.70` | Minimum confidence |
-| `margin_threshold` | `0.12` | Required margin vs runner-up |
+| Parameter          | Default                  | Description                  |
+| ------------------ | ------------------------ | ---------------------------- |
+| `enabled`          | `true`                   | Enable tool selection        |
+| `embed_model`      | `text-embedding-3-small` | Embedding model              |
+| `top_k`            | `6`                      | Candidates to retrieve       |
+| `accept_threshold` | `0.70`                   | Minimum confidence           |
+| `margin_threshold` | `0.12`                   | Required margin vs runner-up |
 
 ### Knowledge System
 
@@ -191,22 +198,23 @@ flowchart TB
 
 **Configuration:** `tools.knowledge.*`
 
-| Parameter | Description |
-|-----------|-------------|
-| `enabled` | Enable knowledge system |
-| `reindex` | `"auto"`, `false`, or `true` |
-| `embeddings.embed_text` | Text embedding config |
-| `embeddings.embed_images` | Image embedding config |
-| `embeddings.embed_video` | Video embedding config |
-| `embeddings.embed_audio` | Audio embedding config |
+| Parameter                 | Description                  |
+| ------------------------- | ---------------------------- |
+| `enabled`                 | Enable knowledge system      |
+| `reindex`                 | `"auto"`, `false`, or `true` |
+| `embeddings.embed_text`   | Text embedding config        |
+| `embeddings.embed_images` | Image embedding config       |
+| `embeddings.embed_video`  | Video embedding config       |
+| `embeddings.embed_audio`  | Audio embedding config       |
 
 ### Tool Registry
 
 Central registry managing core components and external tools.
 
 **Structure:**
-```
-core/tools/{name}/
+
+```plaintext
+shared/core/tools/{name}/
 ├── __init__.py       # Optional preload() function
 ├── functions.py      # {Name}Functions class
 ├── models.py         # Pydantic models
@@ -216,13 +224,13 @@ core/tools/{name}/
 
 ## External Tools
 
-| Tool | Purpose | Provider |
-|------|---------|----------|
-| **Image Generator** | AI image generation | Midjourney/APIFRAME |
-| **Audio Generator** | Audio style transfers | JEN |
-| **Video Generator** | Video generation | Various |
-| **Speech Services** | TTS & speech-to-text | ElevenLabs/OpenAI |
-| **Notifier** | Welcome notifications | Internal |
+| Tool                | Purpose               | Provider            |
+| ------------------- | --------------------- | ------------------- |
+| **Image Generator** | AI image generation   | Midjourney/APIFRAME |
+| **Audio Generator** | Audio style transfers | JEN                 |
+| **Video Generator** | Video generation      | Various             |
+| **Speech Services** | TTS & speech-to-text  | ElevenLabs/OpenAI   |
+| **Notifier**        | Welcome notifications | Internal            |
 
 ## Task Queue Architecture
 
@@ -251,16 +259,16 @@ sequenceDiagram
 
 **Environment Isolation:**
 
-| Environment | Stream Name | Consumer Group |
-|-------------|-------------|----------------|
-| Local dev | `gaim:tasks` | `gaim:workers` |
-| K8S stage | `gaim:tasks:stage` | `gaim:workers:stage` |
-| K8S prod | `gaim:tasks:prod` | `gaim:workers:prod` |
+| Environment | Stream Name        | Consumer Group       |
+| ----------- | ------------------ | -------------------- |
+| Local dev   | `gaim:tasks`       | `gaim:workers`       |
+| K8S stage   | `gaim:tasks:stage` | `gaim:workers:stage` |
+| K8S prod    | `gaim:tasks:prod`  | `gaim:workers:prod`  |
 
 ### Task Module Structure
 
-```
-core/tasks/
+```plaintext
+shared/core/tasks/
 ├── broker.py              # RedisStreamBroker config
 ├── dependencies.py        # Shared task dependencies
 ├── query.py              # Query processing task
@@ -306,16 +314,17 @@ flowchart TB
 
 **Message Types:**
 
-| Type | Durability | Description |
-|------|------------|-------------|
-| `stream_chunk` | Ephemeral | Streaming response chunk |
-| `stream_complete` | Ephemeral | Stream completion |
-| `result` | Ephemeral | Final result |
-| `status` | Ephemeral | Status update |
-| `notification` | Durable | Persistent notification |
-| `ping` | Ephemeral | Keepalive |
+| Type              | Durability | Description              |
+| ----------------- | ---------- | ------------------------ |
+| `stream_chunk`    | Ephemeral  | Streaming response chunk |
+| `stream_complete` | Ephemeral  | Stream completion        |
+| `result`          | Ephemeral  | Final result             |
+| `status`          | Ephemeral  | Status update            |
+| `notification`    | Durable    | Persistent notification  |
+| `ping`            | Ephemeral  | Keepalive                |
 
 **Protocol:**
+
 - Client → Server: `auth` (connect), `ack` (acknowledgment)
 - Server → Client: `notification`, `ping`, response messages
 
@@ -324,93 +333,121 @@ flowchart TB
 ```mermaid
 graph TB
     subgraph cli["lco-gaim CLI"]
-        CONFIG_CMD["config<br/>get/set/backup/reload"]
-        ENV_CMD["env<br/>local/remote stage/prod"]
-        DOCKER_CMD["docker<br/>up/down/logs"]
-        TOOLS_CMD["tools<br/>lifecycle management"]
+        DEV_CMD["dev<br/>init/docker/port-forward"]
+        DEPLOY_CMD["deploy<br/>activate/deactivate/restart/logs"]
+        CONFIG_CMD["config<br/>get/set/secrets/prompts"]
+        ACCESS_CMD["access<br/>auth/users/api-keys"]
+        TOOLS_CMD["tools<br/>selector/knowledge sync"]
         LINEAGE_CMD["lineage<br/>discovery"]
-        AUTH_CMD["auth<br/>authentication"]
     end
 ```
 
-**Key Commands:**
+**GAIM Lifecycle:**
 
-| Command | Purpose |
-|---------|---------|
-| `lco-gaim config get api.settings.tools.knowledge.enabled` | Get config value |
-| `lco-gaim config set api.settings.tools.knowledge.enabled true` | Set config value |
-| `lco-gaim config backup create` | Create config backup |
-| `lco-gaim config reload` | Hot-reload configuration |
-| `lco-gaim env local stage` | Switch to local stage |
-| `lco-gaim env remote prod` | Switch to remote prod |
-| `lco-gaim docker up` | Start local containers |
-| `lco-gaim docker down` | Stop local containers |
+| Command                              | Purpose                                  |
+| ------------------------------------ | ---------------------------------------- |
+| `lco-gaim dev init --gaim-name NAME` | Initialize GAIM locally                  |
+| `lco-gaim info`                      | Check GAIM status                        |
+| `lco-gaim deploy activate`           | Scale up (requires tool selector on NFS) |
+| `lco-gaim deploy deactivate`         | Scale down to 0 replicas                 |
+
+**Other Commands:**
+
+| Command                            | Purpose                |
+| ---------------------------------- | ---------------------- |
+| `lco-gaim config get [KEY]`        | Get config value       |
+| `lco-gaim config set KEY VALUE`    | Set config override    |
+| `lco-gaim config prompts edit KEY` | Edit prompt in $EDITOR |
+| `lco-gaim dev docker up`           | Start local containers |
+| `lco-gaim dev docker down`         | Stop local containers  |
 
 ## Source Code Structure
 
-```
+```plaintext
 living-content-gaim/
-├── lco-gaim/
-│   └── src/
-│       ├── core/              # Shared package (gaim-core)
-│       │   ├── clients/       # Database clients
-│       │   ├── config/        # Configuration
-│       │   ├── execution/     # Query execution
-│       │   ├── managers/      # Connection management
-│       │   ├── models/        # Data models
-│       │   ├── streams/       # Redis Streams
-│       │   ├── tasks/         # Taskiq tasks
-│       │   ├── tools/         # Tool implementations
-│       │   └── utils/         # Utilities
-│       │
-│       ├── api/               # API Service
-│       │   ├── routers/       # HTTP endpoints
-│       │   ├── middleware/    # Request processing
-│       │   └── main.py        # FastAPI app
-│       │
-│       ├── worker/            # Worker Service
-│       │   └── app/
-│       │       └── main.py    # Taskiq app
-│       │
-│       ├── fe/                # Frontend (Vanilla JS, event-based)
-│       │
-│       └── hub/               # CLI tool
+├── shared/                    # Shared package (gaim-core) - query path only
+│   └── core/
+│       ├── clients/           # Database clients
+│       ├── config/            # Configuration
+│       ├── execution/         # Query execution
+│       ├── managers/          # Connection management
+│       ├── models/            # Data models
+│       ├── streams/           # Redis Streams
+│       ├── tasks/             # Taskiq tasks
+│       ├── tools/             # Tool implementations (retrieval only)
+│       │   └── knowledge/
+│       │       ├── retrieval/ # Query execution
+│       │       ├── schemas/   # Schema definitions
+│       │       └── storage/   # LanceDB access
+│       └── utils/             # Utilities
+│
+├── api/                       # API Service
+│   └── app/
+│       ├── routers/           # HTTP endpoints
+│       ├── middleware/        # Request processing
+│       └── main.py            # FastAPI app
+│
+├── worker/                    # Worker Service
+│   └── app/
+│       └── main.py            # Taskiq app
+│
+├── hub/                       # CLI tool and index building
+│   └── app/
+│       ├── interfaces/cli/    # Click commands
+│       ├── services/          # Business logic
+│       └── tools/             # Index building pipeline
+│           └── knowledge/
+│               ├── ingestion/ # PDF processing, chunking
+│               └── services/  # OCR, multimodal (easyocr, pymupdf)
+│
+├── fe/                        # Frontend (Vanilla JS, event-based)
 │
 └── documentation/             # Project docs
 ```
 
+**Architecture Notes:**
+
+- **shared** contains query/retrieval path only - lightweight, no heavy ML deps
+- **hub** contains index building pipeline with heavy dependencies (easyocr,
+  pymupdf)
+- API and Worker depend on shared; they never import hub code
+
 ## API Endpoints
 
 ### Authentication
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/auth/whoami` | GET | Current user info |
-| `/auth/check` | GET | Quick auth status |
-| `/auth/exchange` | POST | Auth code exchange |
+
+| Endpoint         | Method | Description        |
+| ---------------- | ------ | ------------------ |
+| `/auth/whoami`   | GET    | Current user info  |
+| `/auth/check`    | GET    | Quick auth status  |
+| `/auth/exchange` | POST   | Auth code exchange |
 
 ### Content Sessions
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/content-sessions` | POST | Create session |
-| `/content-sessions` | GET | List sessions |
-| `/content-sessions/{id}` | GET | Get session |
-| `/content-sessions/{id}` | PUT | Update session |
+
+| Endpoint                 | Method | Description    |
+| ------------------------ | ------ | -------------- |
+| `/content-sessions`      | POST   | Create session |
+| `/content-sessions`      | GET    | List sessions  |
+| `/content-sessions/{id}` | GET    | Get session    |
+| `/content-sessions/{id}` | PUT    | Update session |
 | `/content-sessions/{id}` | DELETE | Delete session |
 
 ### Queries
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/queries` | POST | Submit query |
-| `/queries/{id}` | GET | Get query status |
-| `/queries/{id}` | DELETE | Cancel query |
+
+| Endpoint        | Method | Description      |
+| --------------- | ------ | ---------------- |
+| `/queries`      | POST   | Submit query     |
+| `/queries/{id}` | GET    | Get query status |
+| `/queries/{id}` | DELETE | Cancel query     |
 
 ### System
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/system/queue` | GET | Queue health |
-| `/config` | GET/PUT/PATCH | Configuration |
-| `/metrics` | GET | Prometheus metrics |
-| `/health` | GET | Health check |
+
+| Endpoint        | Method        | Description        |
+| --------------- | ------------- | ------------------ |
+| `/system/queue` | GET           | Queue health       |
+| `/config`       | GET/PUT/PATCH | Configuration      |
+| `/metrics`      | GET           | Prometheus metrics |
+| `/health`       | GET           | Health check       |
 
 ## Related Documentation
 
